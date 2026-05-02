@@ -55,8 +55,9 @@ The app supports two protected API modes:
 
 - Static token mode: set `VITE_AUTH_TOKEN` or `VITE_NOTIFICATION_API_TOKEN`.
 - Auth endpoint mode: set `VITE_AUTH_API_URL`, `VITE_AUTH_EMAIL`, `VITE_AUTH_NAME`, `VITE_AUTH_ROLL_NO`, `VITE_AUTH_ACCESS_CODE`, `VITE_AUTH_CLIENT_ID`, and `VITE_AUTH_CLIENT_SECRET`.
+- Registration mode: run `npm run register` after setting `VITE_REGISTER_API_URL`, `VITE_AUTH_EMAIL`, `VITE_AUTH_NAME`, `VITE_AUTH_MOBILE_NO`, `VITE_AUTH_GITHUB_USERNAME`, `VITE_AUTH_ROLL_NO`, and `VITE_AUTH_ACCESS_CODE`.
 
-In auth endpoint mode, the frontend posts those values to the auth API, reads `token_type`, `access_token`, and `expires_in`, caches the token in memory, and attaches the token as an `Authorization` header for notification and logging requests.
+Registration mode saves `clientID` and `clientSecret` into the local `.env`. In auth endpoint mode, the frontend posts the auth values to the auth API, reads `token_type`, `access_token`, and `expires_in`, caches the token in memory, and attaches the token as an `Authorization` header for notification and logging requests.
 
 ## Logging Strategy
 

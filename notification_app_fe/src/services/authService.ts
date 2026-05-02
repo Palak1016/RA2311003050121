@@ -83,7 +83,9 @@ function buildAuthRequestBody() {
     .map(([key]) => key);
 
   if (missingFields.length > 0) {
-    throw new Error(`Missing auth environment values: ${missingFields.join(", ")}`);
+    throw new Error(
+      `Missing auth environment values: ${missingFields.join(", ")}. Run npm run register if client credentials are not available yet.`,
+    );
   }
 
   return body as Record<keyof typeof body, string>;
