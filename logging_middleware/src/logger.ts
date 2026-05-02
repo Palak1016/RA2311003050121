@@ -24,6 +24,7 @@ export type LogPackage =
 type LoggerConfig = {
   endpoint?: string;
   bearerToken?: string;
+  getAuthorizationHeader?: () => string | undefined | Promise<string | undefined>;
 };
 
 const allowedStacks = new Set<LogStack>(["frontend", "backend"]);
@@ -57,6 +58,7 @@ export function configureLogger(config: LoggerConfig) {
   loggerConfig = {
     endpoint: config.endpoint?.trim() || undefined,
     bearerToken: config.bearerToken?.trim() || undefined,
+    getAuthorizationHeader: config.getAuthorizationHeader,
   };
 }
 
@@ -84,11 +86,12 @@ export async function Log(
   }
 
   try {
+    const authorizationHeader = await resolveAuthorizationHeader();
     const response = await fetch(loggerConfig.endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(loggerConfig.bearerToken ? { Authorization: `Bearer ${loggerConfig.bearerToken}` } : {}),
+        ...(authorizationHeader ? { Authorization: authorizationHeader } : {}),
       },
       body: JSON.stringify(payload),
     });
@@ -120,3 +123,14 @@ function writeConsole(level: LogLevel, payload: unknown) {
   console[method](payload);
 }
 
+async function resolveAuthorizationHeader() {
+  if (loggerConfig.bearerToken) {
+    return normalizeAuthorizationHeader(loggerConfig.bearerToken);
+  }
+
+  return loggerConfig.getAuthorizationHeader?.();
+}
+
+function normalizeAuthorizationHeader(token: string) {
+  return token.toLowerCase().startsWith("bearer ") ? token : `Bearer ${token}`;
+}

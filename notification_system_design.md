@@ -31,6 +31,7 @@ For small and medium campus notification feeds, sorting in memory is acceptable.
 The frontend is split by responsibility:
 
 - `services/notificationApi.ts` handles API access, query parameters, response normalization, and fallback practice data.
+- `services/authService.ts` handles protected-route authentication, token caching, and authorization headers.
 - `utils/priority.ts` computes notification ranking.
 - `state/viewedStore.ts` persists viewed notification IDs in `localStorage`.
 - `hooks/useNotifications.ts` isolates loading, error, and refetch state.
@@ -47,6 +48,15 @@ The frontend builds requests with these query parameters:
 - `notification_type`
 
 If `VITE_NOTIFICATION_API_URL` is not configured, the app uses synthetic practice data. This keeps the project runnable without relying on protected test infrastructure.
+
+## Authentication Flow
+
+The app supports two protected API modes:
+
+- Static token mode: set `VITE_AUTH_TOKEN` or `VITE_NOTIFICATION_API_TOKEN`.
+- Auth endpoint mode: set `VITE_AUTH_API_URL`, `VITE_AUTH_EMAIL`, `VITE_AUTH_NAME`, `VITE_AUTH_ROLL_NO`, `VITE_AUTH_ACCESS_CODE`, `VITE_AUTH_CLIENT_ID`, and `VITE_AUTH_CLIENT_SECRET`.
+
+In auth endpoint mode, the frontend posts those values to the auth API, reads `token_type`, `access_token`, and `expires_in`, caches the token in memory, and attaches the token as an `Authorization` header for notification and logging requests.
 
 ## Logging Strategy
 
@@ -66,4 +76,3 @@ API failures render a visible error state with a retry action. Response normaliz
 ## Responsive UI
 
 The UI uses vanilla CSS. Desktop layouts use a two-column dashboard frame. Mobile layouts collapse into a single-column flow with fixed-size controls to avoid layout jumps.
-

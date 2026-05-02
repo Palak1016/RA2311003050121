@@ -1,5 +1,6 @@
 import { practiceNotifications } from "../data/practiceNotifications";
 import { Log } from "../middleware/loggerConfig";
+import { getAuthorizationHeader } from "./authService";
 import type {
   CampusNotification,
   NotificationPageResult,
@@ -9,7 +10,6 @@ import type {
 import { toApiQuery } from "../utils/query";
 
 const notificationApiUrl = import.meta.env.VITE_NOTIFICATION_API_URL?.trim();
-const notificationApiToken = import.meta.env.VITE_NOTIFICATION_API_TOKEN?.trim();
 
 export async function fetchNotifications(query: NotificationQuery): Promise<NotificationPageResult> {
   void Log(
@@ -26,11 +26,12 @@ export async function fetchNotifications(query: NotificationQuery): Promise<Noti
   const url = new URL(notificationApiUrl);
   const params = toApiQuery(query);
   params.forEach((value, key) => url.searchParams.set(key, value));
+  const authorizationHeader = await getAuthorizationHeader();
 
   const response = await fetch(url, {
     headers: {
       Accept: "application/json",
-      ...(notificationApiToken ? { Authorization: `Bearer ${notificationApiToken}` } : {}),
+      ...(authorizationHeader ? { Authorization: authorizationHeader } : {}),
     },
   });
 
@@ -127,4 +128,3 @@ function normalizeType(value: string | undefined): NotificationType | null {
 
   return null;
 }
-
